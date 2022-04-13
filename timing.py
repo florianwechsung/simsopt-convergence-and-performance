@@ -1,23 +1,6 @@
 #!/usr/bin/env python
 r"""
-In this example we solve a FOCUS like Stage II coil optimisation problem: the
-goal is to find coils that generate a specific target normal field on a given
-surface.  In this particular case we consider a vacuum field, so the target is
-just zero.
-
-The objective is given by
-
-    J = (1/2) \int |B dot n|^2 ds
-        + LENGTH_WEIGHT * (sum CurveLength)
-        + DISTANCE_WEIGHT * MininumDistancePenalty(DISTANCE_THRESHOLD)
-        + CURVATURE_WEIGHT * CurvaturePenalty(CURVATURE_THRESHOLD)
-        + MSC_WEIGHT * MeanSquaredCurvaturePenalty(MSC_THRESHOLD)
-
-if any of the weights are increased, or the thresholds are tightened, the coils
-are more regular and better separated, but the target normal field may not be
-achieved as well.
-
-The target equilibrium is the QA configuration of arXiv:2108.03711.
+Here we do some timing for a typical Stage-II coil optimization problem.
 """
 
 import os
