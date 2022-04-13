@@ -13,8 +13,7 @@ from simsopt.objectives.utilities import QuadraticPenalty
 from simsopt.geo.curve import curves_to_vtk, create_equally_spaced_curves
 from simsopt.field.biotsavart import BiotSavart
 from simsopt.field.coil import Current, coils_via_symmetries
-from simsopt.geo.curveobjectives import CurveLength, MinimumDistance, \
-    MeanSquaredCurvature, LpCurveCurvature
+from simsopt.geo.curveobjectives import CurveLength, CurveCurveDistance
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -70,7 +69,7 @@ curves = [c.curve for c in coils]
 # Define the objective function:
 Jf = SquaredFlux(s, bs)
 Jls = [CurveLength(c) for c in base_curves]
-Jdist = MinimumDistance(curves, DISTANCE_THRESHOLD)
+Jdist = CurveCurveDistance(curves, DISTANCE_THRESHOLD, num_basecurves=ncoils)
 
 if args.MODE == 0:
     JF = Jf
