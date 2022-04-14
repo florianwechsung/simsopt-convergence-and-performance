@@ -97,32 +97,15 @@ elif args.MODE == 2:
     JF = Jf + LENGTH_WEIGHT * sum(Jls) + DISTANCE_WEIGHT * Jdist
 
 
-def fun(dofs):
-    JF.x = dofs
-    return JF.J(), JF.dJ()
-
-
-# print("""
-# ################################################################################
-# ### Perform a Taylor test ######################################################
-# ################################################################################
-# """)
-f = fun
+# execute once to force JIT by JAX
+JF.J()
+JF.dJ()
 dofs = JF.x
-np.random.seed(1)
-h = np.random.uniform(size=dofs.shape)
-J0, dJ0 = f(dofs)
-dJh = sum(dJ0 * h)
-for eps in [1e-3, 1e-4, 1e-5, 1e-6, 1e-7]:
-    J1, _ = f(dofs + eps*h)
-    J2, _ = f(dofs - eps*h)
-    # print("err", (J1-J2)/(2*eps) - dJh)
 
-# print("""
-# ################################################################################
-# ### Run 100 random function and gradient evaluations ###########################
-# ################################################################################
-# """)
+
+################################################################################
+### Run 100 random function and gradient evaluations ###########################
+################################################################################
 
 
 def f(dofs):
@@ -136,14 +119,15 @@ def fg(dofs):
 import time
 tic = time.time()
 for i in range(NITER):
-    # fun(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
-    f(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
+    bs.clear_cached_properties()
+    Jf.J()
 toc = time.time()
-print(f"Mode={args.MODE}, OMP={os.getenv('OMP_NUM_THREADS')}, time={toc-tic:.2f},  f")
+print(f"Mode={args.MODE}, OMP={os.getenv('OMP_NUM_THREADS')}")
+print(f"Time for {NITER} evaluations of ∫(B·n)²ds : {toc-tic:.2f}")
 
 tic = time.time()
 for i in range(NITER):
     # fun(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
     fg(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
 toc = time.time()
-print(f"Mode={args.MODE}, OMP={os.getenv('OMP_NUM_THREADS')}, time={toc-tic:.2f}, f+g")
+print(f"Time for {NITER} iterations of a gradient based algorithm: {toc-tic:.2f}")
