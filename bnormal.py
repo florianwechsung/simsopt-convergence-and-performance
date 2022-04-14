@@ -103,31 +103,36 @@ JF.dJ()
 dofs = JF.x
 
 
-################################################################################
-### Run 100 random function and gradient evaluations ###########################
-################################################################################
-
-
-def f(dofs):
-    JF.x = dofs
-    return JF.J()
 
 def fg(dofs):
     JF.x = dofs
     return JF.J(), JF.dJ()
 
+print(f"Mode={args.MODE}, OMP={os.getenv('OMP_NUM_THREADS')}")
+
 import time
+tic = time.time()
+for i in range(NITER):
+    bs.clear_cached_properties()
+    bs.B()
+toc = time.time()
+print(f"Time for {NITER} evaluations of BiotSavart : {toc-tic:.2f}")
+
 tic = time.time()
 for i in range(NITER):
     bs.clear_cached_properties()
     Jf.J()
 toc = time.time()
-print(f"Mode={args.MODE}, OMP={os.getenv('OMP_NUM_THREADS')}")
 print(f"Time for {NITER} evaluations of ∫(B·n)²ds : {toc-tic:.2f}")
+
+# import cProfile
+# pr = cProfile.Profile()
+# pr.enable()
 
 tic = time.time()
 for i in range(NITER):
-    # fun(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
     fg(dofs + 1e-2 * np.random.standard_normal(size=dofs.shape))
 toc = time.time()
+# pr.disable()
+# pr.dump_stats('profile.stat')
 print(f"Time for {NITER} iterations of a gradient based algorithm: {toc-tic:.2f}")
